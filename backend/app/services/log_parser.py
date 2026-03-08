@@ -80,10 +80,7 @@ def parse_log_file(filepath: str) -> Tuple[List[Dict], str]:
 # ---------------------------------------------------------------------------
 
 def parse_zscaler_log(filepath: str) -> List[Dict]:
-    """
-    Parse a ZScaler web proxy log (CSV or pipe-delimited, plain or .gz).
-    Caps output at 500 entries to fit Claude's context window.
-    """
+    """Parse a ZScaler web proxy log (CSV or pipe-delimited, plain or .gz)."""
     entries = []
     opener = gzip.open if filepath.endswith(".gz") else open
 
@@ -117,7 +114,7 @@ def parse_zscaler_log(filepath: str) -> List[Dict]:
                 "device_hostname": _get(row, "devicehostname"),
             })
 
-    return entries[:500]
+    return entries[:5000]
 
 
 # ---------------------------------------------------------------------------
@@ -125,11 +122,7 @@ def parse_zscaler_log(filepath: str) -> List[Dict]:
 # ---------------------------------------------------------------------------
 
 def parse_apache_log(filepath: str) -> List[Dict]:
-    """
-    Parse Apache/Nginx Combined Log Format lines (plain or .gz).
-    Normalises fields to the same schema used by the ZScaler parser so that
-    Claude's prompt works unchanged across all log types.
-    """
+    """Parse Apache/Nginx Combined Log Format lines (plain or .gz)."""
     entries = []
     opener = gzip.open if filepath.endswith(".gz") else open
 
@@ -163,7 +156,7 @@ def parse_apache_log(filepath: str) -> List[Dict]:
                 "user_agent":     m.group("user_agent") or "",
             })
 
-            if len(entries) >= 500:
+            if len(entries) >= 5000:
                 break
 
     return entries
@@ -174,11 +167,7 @@ def parse_apache_log(filepath: str) -> List[Dict]:
 # ---------------------------------------------------------------------------
 
 def parse_json_log(filepath: str) -> List[Dict]:
-    """
-    Parse NDJSON logs (one JSON object per line, plain or .gz).
-    Uses smart key normalisation to map common field names to a unified schema
-    so downstream code and Claude's prompt stay format-agnostic.
-    """
+    """Parse NDJSON logs (one JSON object per line, plain or .gz)."""
     entries = []
     opener = gzip.open if filepath.endswith(".gz") else open
 
@@ -211,7 +200,7 @@ def parse_json_log(filepath: str) -> List[Dict]:
                 "file_hash_md5":  _jget(obj, ["md5", "file_md5", "md5_hash", "file_hash_md5"]),
             })
 
-            if len(entries) >= 500:
+            if len(entries) >= 5000:
                 break
 
     return entries

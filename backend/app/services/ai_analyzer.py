@@ -45,20 +45,30 @@ Do not include markdown, backticks, or any text outside the JSON object.
 
 
 def _compact(entry: dict) -> dict:
-    """Strip null/empty fields so we send fewer tokens to GPT."""
+    """Strip null/empty fields to reduce token count."""
     return {k: v for k, v in entry.items() if v not in (None, "", 0, [], {})}
+
+
+def _sample(entries: list, n: int = 500) -> list:
+    """Evenly sample n entries across the full list so no part of the file is skipped."""
+    if len(entries) <= n:
+        return entries
+    step = len(entries) / n
+    return [entries[int(i * step)] for i in range(n)]
 
 
 def analyze_with_openai(log_entries: list) -> dict:
     """
-    Send parsed log entries to GPT-4o-mini for threat analysis.
+    Send a representative sample of log entries to GPT-4o-mini for threat analysis.
+    Samples evenly across the full file so the entire log is covered.
     Returns a structured dict with summary, threat_level, timeline, and anomalies.
     """
-    compact_entries = [_compact(e) for e in log_entries[:500]]
+    sampled = _sample(log_entries, 500)
+    compact_entries = [_compact(e) for e in sampled]
     logs_json = json.dumps(compact_entries, separators=(",", ":"))
 
     user_prompt = f"""
-Analyze the following {len(log_entries)} web proxy log entries.
+Analyze the following {len(log_entries)} web proxy log entries (evenly sampled across the full file).
 
 Look for:
 - Unusual request volumes from single IPs (potential DDoS or scraping)

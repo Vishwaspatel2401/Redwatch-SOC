@@ -7,7 +7,7 @@ from app import db
 from app.models import LogUpload, AnalysisResult
 from app.utils import allowed_file
 from app.services.log_parser import parse_log_file
-from app.services.ai_analyzer import analyze_with_openai
+from app.services.ai_analyzer import analyze_with_openai, _sample
 from app.services.virustotal import enrich_with_virustotal
 
 logs_bp = Blueprint("logs", __name__)
@@ -67,7 +67,7 @@ def upload_log():
         )
         vt_thread.start()
 
-        # First 300 events for the dashboard log table
+        # 300 evenly sampled events for the dashboard log table
         events_sample = [
             {
                 "timestamp": e.get("timestamp") or "",
@@ -75,7 +75,7 @@ def upload_log():
                 "url": (e.get("url") or e.get("path") or "").strip() or "/",
                 "status_code": e.get("status_code") or 0,
             }
-            for e in parsed_logs[:300]
+            for e in _sample(parsed_logs, 300)
         ]
 
         analysis = AnalysisResult(
