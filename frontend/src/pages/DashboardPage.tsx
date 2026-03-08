@@ -96,8 +96,13 @@ function getIpBarColor(count: number, max: number): string {
 
 function formatTimeLabel(tick: string): string {
   if (!tick || tick === "unknown") return tick;
-  const t = tick.split("T")[1];
-  return t ? t.slice(0, 5) : tick.slice(11, 16);
+  // ISO format: "2017-01-02T06:03:40" → "06:03"
+  const isoTime = tick.split("T")[1];
+  if (isoTime) return isoTime.slice(0, 5);
+  // Apache format: "02/Jan/2017:06:03:40 +0000" → "06:03"
+  const apacheMatch = tick.match(/(\d{2}:\d{2}):\d{2}/);
+  if (apacheMatch) return apacheMatch[1];
+  return tick;
 }
 
 // ─── Custom Tooltips ──────────────────────────────────────────────────────────
@@ -106,11 +111,15 @@ const TT = { background: "#13161f", border: "1px solid #2a2f3d", borderRadius: 8
 
 function TrafficTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
+  const time = formatTimeLabel(label);
+  const count = payload[0].value;
   return (
     <div style={TT}>
-      <p style={{ color: "#94a3b8", fontSize: 11, marginBottom: 4 }}>{label}</p>
-      <p style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 700 }}>{payload[0].value} requests</p>
-      <p style={{ color: "#64748b", fontSize: 10, marginTop: 2 }}>in this minute</p>
+      <p style={{ color: "#94a3b8", fontSize: 11, marginBottom: 6 }}>🕐 {time}</p>
+      <p style={{ color: "hsl(0,72%,60%)", fontSize: 18, fontWeight: 700, lineHeight: 1 }}>
+        {count} <span style={{ color: "#e2e8f0", fontSize: 13, fontWeight: 400 }}>request{count !== 1 ? "s" : ""}</span>
+      </p>
+      <p style={{ color: "#64748b", fontSize: 10, marginTop: 4 }}>in this minute</p>
     </div>
   );
 }
