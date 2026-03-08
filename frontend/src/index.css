@@ -175,6 +175,28 @@
   }
 }
 
+/* ─── TEXT SELECTION ────────────────────────────────────────────────────── */
+/* Light mode selection */
+::selection {
+  background-color: hsl(0 72% 51% / 0.2);
+  color: hsl(222 25% 5%);
+}
+
+/* Dark mode selection — target html.dark and all descendants */
+html.dark *::selection {
+  background-color: hsl(0 72% 51% / 0.4);
+  color: hsl(0 0% 100%);
+}
+
+/* Specifically fix pre/code blocks which have muted text */
+html.dark pre::selection,
+html.dark pre *::selection,
+html.dark code::selection,
+html.dark code *::selection {
+  background-color: hsl(0 72% 51% / 0.5);
+  color: hsl(0 0% 100%);
+}
+
 /* ─── SCROLLBAR — light ──────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
