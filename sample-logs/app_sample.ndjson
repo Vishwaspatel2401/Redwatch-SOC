@@ -1,0 +1,20 @@
+{"timestamp": "2026-03-06T08:12:01Z", "user": "john.doe", "src_ip": "192.168.1.101", "url": "/api/login", "action": "login_success", "status_code": 200, "bytes_sent": 512}
+{"timestamp": "2026-03-06T08:15:33Z", "user": "jane.smith", "src_ip": "192.168.1.102", "url": "/dashboard", "action": "page_view", "status_code": 200, "bytes_sent": 5412}
+{"timestamp": "2026-03-06T02:34:11Z", "user": "unknown", "src_ip": "185.220.101.45", "url": "/api/login", "action": "login_failed", "status_code": 401, "bytes_sent": 256, "threat": "brute_force"}
+{"timestamp": "2026-03-06T02:34:12Z", "user": "unknown", "src_ip": "185.220.101.45", "url": "/api/login", "action": "login_failed", "status_code": 401, "bytes_sent": 256, "threat": "brute_force"}
+{"timestamp": "2026-03-06T02:34:13Z", "user": "unknown", "src_ip": "185.220.101.45", "url": "/api/login", "action": "login_failed", "status_code": 401, "bytes_sent": 256, "threat": "brute_force"}
+{"timestamp": "2026-03-06T02:34:14Z", "user": "unknown", "src_ip": "185.220.101.45", "url": "/api/login", "action": "login_failed", "status_code": 401, "bytes_sent": 256, "threat": "brute_force"}
+{"timestamp": "2026-03-06T02:34:15Z", "user": "unknown", "src_ip": "185.220.101.45", "url": "/api/login", "action": "login_failed", "status_code": 401, "bytes_sent": 256, "threat": "brute_force"}
+{"timestamp": "2026-03-06T02:34:30Z", "user": "admin", "src_ip": "185.220.101.45", "url": "/api/login", "action": "login_success", "status_code": 200, "bytes_sent": 512}
+{"timestamp": "2026-03-06T09:00:12Z", "user": "alice.wang", "src_ip": "192.168.1.103", "url": "/api/export/users", "action": "data_export", "status_code": 200, "bytes_sent": 15000000, "category": "data_access"}
+{"timestamp": "2026-03-06T11:22:10Z", "user": "bob.jones", "src_ip": "192.168.1.104", "url": "/api/admin/settings", "action": "config_change", "status_code": 200, "bytes_sent": 1024, "category": "admin_action"}
+{"timestamp": "2026-03-06T13:15:00Z", "user": "svc-account", "src_ip": "10.0.0.5", "url": "/api/db/backup", "action": "db_dump", "status_code": 200, "bytes_sent": 95000000, "threat": "data_exfiltration"}
+{"timestamp": "2026-03-06T14:00:01Z", "user": "carol.white", "src_ip": "192.168.1.105", "url": "/api/files/upload", "action": "file_upload", "status_code": 201, "bytes_sent": 2048}
+{"timestamp": "2026-03-06T15:30:22Z", "user": "john.doe", "src_ip": "192.168.1.101", "url": "/api/reports", "action": "page_view", "status_code": 200, "bytes_sent": 8192}
+{"timestamp": "2026-03-06T23:55:10Z", "user": "admin", "src_ip": "10.0.0.2", "url": "/api/admin/users/delete", "action": "bulk_delete", "status_code": 200, "bytes_sent": 256, "category": "admin_action"}
+{"timestamp": "2026-03-07T00:01:00Z", "user": "admin", "src_ip": "10.0.0.2", "url": "/api/admin/config/reset", "action": "config_reset", "status_code": 200, "bytes_sent": 128, "category": "admin_action"}
+{"timestamp": "2026-03-06T10:05:33Z", "user": "dave.kumar", "src_ip": "192.168.1.106", "url": "/api/search", "action": "search", "status_code": 200, "bytes_sent": 4096}
+{"timestamp": "2026-03-06T10:30:00Z", "user": "eve.martin", "src_ip": "192.168.1.107", "url": "/api/messages", "action": "page_view", "status_code": 200, "bytes_sent": 12288}
+{"timestamp": "2026-03-06T16:45:00Z", "user": "unknown", "src_ip": "203.0.113.99", "url": "/api/users?id=1 OR 1=1", "action": "sql_injection_attempt", "status_code": 400, "bytes_sent": 512, "threat": "sql_injection"}
+{"timestamp": "2026-03-06T16:45:01Z", "user": "unknown", "src_ip": "203.0.113.99", "url": "/api/users?id=1 UNION SELECT *", "action": "sql_injection_attempt", "status_code": 400, "bytes_sent": 512, "threat": "sql_injection"}
+{"timestamp": "2026-03-06T17:00:00Z", "user": "jane.smith", "src_ip": "192.168.1.102", "url": "/api/logout", "action": "logout", "status_code": 200, "bytes_sent": 128}

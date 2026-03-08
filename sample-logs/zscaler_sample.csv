@@ -1,0 +1,21 @@
+timestamp,user,src_ip,dst_ip,url,action,category,bytes_sent,bytes_received,status_code,threat_name,duration_ms,riskscore,sha256,bamd5,dlpdict,appname,devicehostname
+2026-03-06 08:12:01,john.doe@corp.com,192.168.1.101,104.21.45.12,https://google.com/search,Allow,Search Engines,1200,45000,200,,320,10,,,,,LAPTOP-JD01
+2026-03-06 08:15:33,jane.smith@corp.com,192.168.1.102,151.101.1.140,https://github.com/repos,Allow,Software/Technology,3400,120000,200,,450,15,,,,,LAPTOP-JS02
+2026-03-06 02:34:11,john.doe@corp.com,192.168.1.101,185.220.101.45,https://malware-c2.ru/beacon,Block,Malware Sites,520,0,403,Win32.Trojan.Beacon,150,95,a3f1c2d4e5b6a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2,d41d8cd98f00b204e9800998ecf8427e,,,LAPTOP-JD01
+2026-03-06 02:35:44,john.doe@corp.com,192.168.1.101,185.220.101.45,https://malware-c2.ru/beacon,Block,Malware Sites,520,0,403,Win32.Trojan.Beacon,140,95,a3f1c2d4e5b6a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2,d41d8cd98f00b204e9800998ecf8427e,,,LAPTOP-JD01
+2026-03-06 02:36:55,john.doe@corp.com,192.168.1.101,185.220.101.45,https://malware-c2.ru/beacon,Block,Malware Sites,520,0,403,Win32.Trojan.Beacon,160,95,a3f1c2d4e5b6a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2,d41d8cd98f00b204e9800998ecf8427e,,,LAPTOP-JD01
+2026-03-06 09:00:12,alice.wang@corp.com,192.168.1.103,52.84.12.99,https://s3.amazonaws.com/corp-backup/dump.zip,Allow,Cloud Storage,15000000,200,200,,8900,30,,,Confidential Data,Dropbox,LAPTOP-AW03
+2026-03-06 09:45:22,bob.jones@corp.com,192.168.1.104,91.108.4.11,https://telegram.org/api,Allow,Instant Messaging,250,1200,200,,120,20,,,,,LAPTOP-BJ04
+2026-03-06 11:22:10,jane.smith@corp.com,192.168.1.102,198.51.100.22,https://phishing-login.xyz/microsoft,Block,Phishing,800,0,403,Phishing.Microsoft.Fake,200,90,,,,,LAPTOP-JS02
+2026-03-06 11:23:05,jane.smith@corp.com,192.168.1.102,198.51.100.22,https://phishing-login.xyz/microsoft,Block,Phishing,800,0,403,Phishing.Microsoft.Fake,210,90,,,,,LAPTOP-JS02
+2026-03-06 13:15:00,alice.wang@corp.com,192.168.1.103,104.21.45.12,https://google.com,Allow,Search Engines,900,32000,200,,280,10,,,,,LAPTOP-AW03
+2026-03-06 14:00:01,svc-account@corp.com,10.0.0.5,203.0.113.45,https://pastebin.com/raw/xK9mN2pQ,Allow,File Sharing,85000000,500,200,,12000,75,,,Confidential Data,Unknown,SERVER-SVC01
+2026-03-06 14:01:15,svc-account@corp.com,10.0.0.5,203.0.113.45,https://pastebin.com/raw/xK9mN2pQ,Allow,File Sharing,92000000,500,200,,11500,75,,,Confidential Data,Unknown,SERVER-SVC01
+2026-03-06 03:12:44,bob.jones@corp.com,192.168.1.104,5.188.86.172,https://exploit-kit.net/payload.exe,Block,Malware Sites,300,0,403,Exploit.Kit.Rig,180,98,b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3,,,LAPTOP-BJ04
+2026-03-06 15:30:22,carol.white@corp.com,192.168.1.105,172.217.14.100,https://drive.google.com/file/d/abc123,Allow,Cloud Storage,500,5000000,200,,650,25,,,,,LAPTOP-CW05
+2026-03-06 16:45:00,john.doe@corp.com,192.168.1.101,104.21.45.12,https://google.com,Allow,Search Engines,1100,42000,200,,310,10,,,,,LAPTOP-JD01
+2026-03-06 23:55:10,admin@corp.com,10.0.0.2,185.130.5.231,https://darkweb-market.onion.ws/login,Block,Criminal Skills,400,0,403,,,85,,,,,SERVER-ADMIN
+2026-03-06 23:56:30,admin@corp.com,10.0.0.2,185.130.5.231,https://darkweb-market.onion.ws/login,Block,Criminal Skills,400,0,403,,,85,,,,,SERVER-ADMIN
+2026-03-07 00:01:00,admin@corp.com,10.0.0.2,185.130.5.231,https://darkweb-market.onion.ws/dashboard,Block,Criminal Skills,400,0,403,,,85,,,,,SERVER-ADMIN
+2026-03-06 10:05:33,dave.kumar@corp.com,192.168.1.106,151.101.65.140,https://stackoverflow.com/questions,Allow,Software/Technology,800,28000,200,,400,5,,,,,LAPTOP-DK06
+2026-03-06 10:30:00,eve.martin@corp.com,192.168.1.107,13.107.42.14,https://office365.com/mail,Allow,Web-based Email,1500,65000,200,,520,10,,,,,LAPTOP-EM07

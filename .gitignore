@@ -1,0 +1,41 @@
+# ── Python ────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# ── Environment / Secrets ─────────────────
+.env
+backend/.env
+*.env.local
+
+# ── Node ──────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+npm-debug.log*
+yarn-error.log*
+
+# ── Uploads (runtime files) ───────────────
+/tmp/uploads/
+uploads/
+
+# ── OS ────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ───────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.sw?
+
+# ── Misc ──────────────────────────────────
+*.log
+*.docx
