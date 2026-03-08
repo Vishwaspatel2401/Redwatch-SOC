@@ -5,16 +5,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 from app import db
 from app.models import LogUpload, AnalysisResult
+from app.utils import allowed_file
 from app.services.log_parser import parse_log_file
 from app.services.ai_analyzer import analyze_with_openai
 from app.services.virustotal import enrich_with_virustotal
 
 logs_bp = Blueprint("logs", __name__)
-
-
-def allowed_file(filename):
-    allowed = current_app.config["ALLOWED_EXTENSIONS"]
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in allowed
 
 
 @logs_bp.route("/upload", methods=["OPTIONS"])
@@ -44,7 +40,6 @@ def upload_log():
 
     file_size = os.path.getsize(filepath)
 
-    # Create DB record
     upload = LogUpload(
         user_id=user_id,
         filename=filename,
@@ -58,16 +53,13 @@ def upload_log():
         # Auto-detect format and parse
         parsed_logs, log_type = parse_log_file(filepath)
 
-        # Persist detected log_type back onto the upload record
         upload.log_type = log_type
         db.session.commit()
 
         # Analyze with OpenAI immediately — don't block on VirusTotal
         result = analyze_with_openai(parsed_logs)
 
-        # Run VirusTotal enrichment in background (free tier = 15s/hash, too slow to block).
-        # It's a no-op for logs without sha256 fields (Apache, most JSON).
-        # daemon=True so it won't prevent process shutdown.
+        # VT free tier is 4 req/min — run in background, non-blocking
         vt_thread = threading.Thread(
             target=enrich_with_virustotal,
             args=(parsed_logs,),
@@ -75,7 +67,7 @@ def upload_log():
         )
         vt_thread.start()
 
-        # Sample events for dashboard "Recent Log Events" table (timestamp, ip, path, status)
+        # First 300 events for the dashboard log table
         events_sample = [
             {
                 "timestamp": e.get("timestamp") or "",
@@ -86,7 +78,6 @@ def upload_log():
             for e in parsed_logs[:300]
         ]
 
-        # Persist results
         analysis = AnalysisResult(
             upload_id=upload.id,
             summary=result.get("summary"),
