@@ -99,8 +99,9 @@ function formatTimeLabel(tick: string): string {
   // ISO format: "2017-01-02T06:03:40" → "06:03"
   const isoTime = tick.split("T")[1];
   if (isoTime) return isoTime.slice(0, 5);
-  // Apache format: "02/Jan/2017:06:03:40 +0000" → "06:03"
-  const apacheMatch = tick.match(/(\d{2}:\d{2}):\d{2}/);
+  // Apache format: "02/Jan/2017:06:03" or "02/Jan/2017:06:03:40 +0000"
+  // Match HH:MM right after the 4-digit year colon
+  const apacheMatch = tick.match(/\d{4}:(\d{2}:\d{2})/);
   if (apacheMatch) return apacheMatch[1];
   return tick;
 }
