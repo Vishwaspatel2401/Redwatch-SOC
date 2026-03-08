@@ -1,15 +1,27 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getUploads, chatWithAssistant, type ChatMessage } from "@/lib/api";
 import { Bot, Send, X, MessageSquare, Loader2, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+const MIN_W = 280;
+const MAX_W = 640;
+const MIN_H = 320;
+const MAX_H = 720;
+const DEFAULT_W = 320;
+const DEFAULT_H = 440;
+
 export default function ChatBubble() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
+  const [size, setSize] = useState({ width: DEFAULT_W, height: DEFAULT_H });
+
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const isResizing = useRef(false);
+  const resizeType = useRef<"corner" | "top" | "left">("corner");
+  const resizeStart = useRef({ x: 0, y: 0, width: DEFAULT_W, height: DEFAULT_H });
 
   const { data: uploads } = useQuery({ queryKey: ["uploads"], queryFn: getUploads });
   const activeUploadId = uploads?.[0]?.id;
@@ -28,6 +40,49 @@ export default function ChatBubble() {
     }
   }, [messages]);
 
+  // Global mouse move/up for resize
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizing.current) return;
+    const dx = resizeStart.current.x - e.clientX; // left = grow width
+    const dy = resizeStart.current.y - e.clientY; // up   = grow height
+    setSize((prev) => {
+      const newW =
+        resizeType.current === "top"
+          ? prev.width
+          : Math.min(MAX_W, Math.max(MIN_W, resizeStart.current.width + dx));
+      const newH =
+        resizeType.current === "left"
+          ? prev.height
+          : Math.min(MAX_H, Math.max(MIN_H, resizeStart.current.height + dy));
+      return { width: newW, height: newH };
+    });
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    isResizing.current = false;
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
+
+  const startResize = (e: React.MouseEvent, type: "corner" | "top" | "left") => {
+    e.preventDefault();
+    isResizing.current = true;
+    resizeType.current = type;
+    resizeStart.current = { x: e.clientX, y: e.clientY, width: size.width, height: size.height };
+    document.body.style.cursor =
+      type === "corner" ? "nw-resize" : type === "top" ? "n-resize" : "w-resize";
+    document.body.style.userSelect = "none";
+  };
+
   const handleSend = () => {
     if (!input.trim()) return;
     const userMsg: ChatMessage = { role: "user", content: input };
@@ -42,9 +97,39 @@ export default function ChatBubble() {
       {/* Chat Panel */}
       {isOpen && (
         <div
-          className="w-80 bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
-          style={{ height: "440px" }}
+          className="bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden relative"
+          style={{ width: size.width, height: size.height }}
         >
+          {/* ── Resize: top-left corner ── */}
+          <div
+            onMouseDown={(e) => startResize(e, "corner")}
+            className="absolute top-0 left-0 w-4 h-4 cursor-nw-resize z-10 group"
+            title="Drag to resize"
+          >
+            {/* Visual grip dots */}
+            <svg
+              width="10" height="10"
+              viewBox="0 0 10 10"
+              className="absolute top-1 left-1 text-muted-foreground/40 group-hover:text-primary/60 transition-colors"
+            >
+              <circle cx="2" cy="2" r="1" fill="currentColor" />
+              <circle cx="2" cy="6" r="1" fill="currentColor" />
+              <circle cx="6" cy="2" r="1" fill="currentColor" />
+            </svg>
+          </div>
+
+          {/* ── Resize: top edge ── */}
+          <div
+            onMouseDown={(e) => startResize(e, "top")}
+            className="absolute top-0 left-4 right-0 h-1.5 cursor-n-resize z-10"
+          />
+
+          {/* ── Resize: left edge ── */}
+          <div
+            onMouseDown={(e) => startResize(e, "left")}
+            className="absolute top-4 left-0 w-1.5 bottom-0 cursor-w-resize z-10"
+          />
+
           {/* Header */}
           <div className="p-3 border-b border-border bg-primary/5 flex items-center gap-2 flex-shrink-0">
             <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center glow-red">
@@ -148,7 +233,7 @@ export default function ChatBubble() {
       {/* Bubble Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-13 h-13 rounded-full bg-primary shadow-lg flex items-center justify-center hover:bg-primary/90 transition-all glow-red"
+        className="rounded-full bg-primary shadow-lg flex items-center justify-center hover:bg-primary/90 transition-all glow-red"
         style={{ width: "52px", height: "52px" }}
         title="Ask A.R.I.A."
       >
