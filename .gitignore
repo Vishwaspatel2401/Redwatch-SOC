@@ -30,6 +30,9 @@ uploads/
 .DS_Store
 Thumbs.db
 
+# ── Claude Code ───────────────────────────
+.claude/
+
 # ── IDE ───────────────────────────────────
 .vscode/
 .idea/
