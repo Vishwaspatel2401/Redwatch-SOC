@@ -65,12 +65,12 @@ export async function login(email: string, password: string) {
   return data;
 }
 
-export async function register(email: string, password: string) {
+export async function register(email: string, password: string, username: string) {
   const data = await request<{ access_token: string; user: unknown }>(
     "/api/auth/register",
     {
       method: "POST",
-      body: JSON.stringify({ username: email, email, password }),
+      body: JSON.stringify({ username, email, password }),
     }
   );
   setToken(data.access_token);

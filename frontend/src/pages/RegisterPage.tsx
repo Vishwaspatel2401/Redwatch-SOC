@@ -60,8 +60,8 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm text-muted-foreground">Full Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Analyst" required className="bg-secondary border-border" />
+              <Label htmlFor="name" className="text-sm text-muted-foreground">Username</Label>
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="vishwas" required className="bg-secondary border-border" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm text-muted-foreground">Email</Label>
