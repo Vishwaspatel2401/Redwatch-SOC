@@ -35,7 +35,10 @@ def login():
     if not data or not all(k in data for k in ("username", "password")):
         return jsonify({"error": "username and password are required"}), 400
 
-    user = User.query.filter_by(username=data["username"]).first()
+    identifier = data["username"]
+    user = User.query.filter(
+        (User.username == identifier) | (User.email == identifier)
+    ).first()
     if not user or not bcrypt.check_password_hash(user.password_hash, data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 
