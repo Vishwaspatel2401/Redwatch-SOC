@@ -1,5 +1,4 @@
 import os
-import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
@@ -16,17 +15,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("app.config.Config")
 
-    # CORS first so preflight OPTIONS and all responses get the right headers
+    # CORS — JWT is sent via Authorization header (not cookies)
+    # so supports_credentials is not needed and origins can be wildcard
     CORS(
         app,
-        origins=[
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://localhost:5173",
-            re.compile(r"https://.*\.vercel\.app"),
-            os.environ.get("FRONTEND_URL", ""),
-        ],
-        supports_credentials=True,
+        origins="*",
         allow_headers=["Content-Type", "Authorization"],
         methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     )
