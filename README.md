@@ -2,6 +2,9 @@
 
 A full-stack cybersecurity platform for uploading and analyzing web proxy, server, and application logs. Uses OpenAI GPT-4o-mini to detect anomalies, identify threats, and generate SOC analyst summaries with confidence scores. Optionally enriches analysis with VirusTotal hash lookups.
 
+🔴 **Live Demo:** [redwatch-soc.vercel.app](https://redwatch-soc.vercel.app)
+📁 **GitHub:** [github.com/Vishwaspatel2401/Redwatch-SOC](https://github.com/Vishwaspatel2401/Redwatch-SOC)
+
 ---
 
 ## Tech Stack
