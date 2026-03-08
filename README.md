@@ -15,7 +15,7 @@ A full-stack cybersecurity platform for uploading and analyzing web proxy, serve
 | Frontend | Recharts | 2.x |
 | Frontend | React Router | 6.x |
 | Backend | Python + Flask | 3.11+ / 3.0 |
-| Backend | SQLAlchemy + Alembic | via Flask-SQLAlchemy / Flask-Migrate |
+| Backend | SQLAlchemy | via Flask-SQLAlchemy (tables auto-created on boot) |
 | Backend | Flask-JWT-Extended + Bcrypt | 4.x / 1.x |
 | AI | OpenAI GPT-4o-mini | via openai SDK ≥1.50 |
 | Threat Intel | VirusTotal API v3 | Optional |
@@ -129,12 +129,6 @@ UPLOAD_FOLDER=/tmp/uploads
 
 # Optional — enables SHA256 hash lookups for ZScaler logs
 VIRUSTOTAL_API_KEY=your-vt-key-here
-```
-
-Apply database migrations:
-
-```bash
-flask db upgrade
 ```
 
 Start the backend (runs on port 8000):
@@ -270,7 +264,7 @@ When `VIRUSTOTAL_API_KEY` is set, the backend enriches log entries that contain 
 **`analysis_results`**
 - `id` (UUID PK), `upload_id` (FK → log_uploads), `summary`, `threat_level`, `total_events`, `flagged_events`, `key_findings` (JSON), `timeline_json` (JSON), `anomalies_json` (JSON), `events_sample` (JSON), `raw_response`, `analyzed_at`
 
-Migrations are managed with **Alembic** (via Flask-Migrate). Run `flask db upgrade` to apply all migrations.
+Tables are **auto-created on first boot** via `db.create_all()` in the app factory. No migration commands needed.
 
 ---
 
@@ -284,9 +278,14 @@ redwatch-soc/
 │       │   ├── DashboardPage.tsx     # Charts, metrics, history panel
 │       │   ├── UploadPage.tsx        # File upload + upload history
 │       │   ├── AlertsPage.tsx        # Anomaly cards with confidence scores
-│       │   └── AssistantPage.tsx     # AI chat interface
+│       │   ├── ReportsPage.tsx       # Incident report generation + PDF export
+│       │   └── LandingPage.tsx       # Public marketing homepage
 │       ├── components/
-│       │   └── AppLayout.tsx         # Sidebar navigation
+│       │   ├── AppLayout.tsx         # Sidebar navigation + theme toggle
+│       │   └── ChatBubble.tsx        # A.R.I.A. floating AI assistant widget
+│       ├── contexts/
+│       │   ├── AuthContext.tsx       # JWT auth state + RequireAuth guard
+│       │   └── ThemeContext.tsx      # Dark/light mode + localStorage persistence
 │       └── lib/
 │           └── api.ts                # Typed API client (fetch + JWT)
 ├── backend/
@@ -301,7 +300,6 @@ redwatch-soc/
 │           ├── log_parser.py         # Auto-detect + parse ZScaler/Apache/JSON
 │           ├── ai_analyzer.py        # OpenAI GPT-4o-mini integration
 │           └── virustotal.py         # VirusTotal SHA256 enrichment
-├── migrations/                       # Alembic migration files
 ├── sample-logs/
 │   ├── zscaler_sample.csv
 │   ├── apache_sample.log
