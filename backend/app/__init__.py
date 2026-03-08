@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
@@ -22,6 +23,8 @@ def create_app():
             "http://localhost:3000",
             "http://127.0.0.1:3000",
             "http://localhost:5173",
+            re.compile(r"https://.*\.vercel\.app"),
+            os.environ.get("FRONTEND_URL", ""),
         ],
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization"],
