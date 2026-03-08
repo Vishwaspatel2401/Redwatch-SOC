@@ -20,7 +20,6 @@ export default function ChatBubble() {
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isResizing = useRef(false);
-  const resizeType = useRef<"corner" | "top" | "left">("corner");
   const resizeStart = useRef({ x: 0, y: 0, width: DEFAULT_W, height: DEFAULT_H });
 
   const { data: uploads } = useQuery({ queryKey: ["uploads"], queryFn: getUploads });
@@ -43,18 +42,11 @@ export default function ChatBubble() {
   // Global mouse move/up for resize
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing.current) return;
-    const dx = resizeStart.current.x - e.clientX; // left = grow width
-    const dy = resizeStart.current.y - e.clientY; // up   = grow height
-    setSize((prev) => {
-      const newW =
-        resizeType.current === "top"
-          ? prev.width
-          : Math.min(MAX_W, Math.max(MIN_W, resizeStart.current.width + dx));
-      const newH =
-        resizeType.current === "left"
-          ? prev.height
-          : Math.min(MAX_H, Math.max(MIN_H, resizeStart.current.height + dy));
-      return { width: newW, height: newH };
+    const dx = resizeStart.current.x - e.clientX;
+    const dy = resizeStart.current.y - e.clientY;
+    setSize({
+      width:  Math.min(MAX_W, Math.max(MIN_W, resizeStart.current.width  + dx)),
+      height: Math.min(MAX_H, Math.max(MIN_H, resizeStart.current.height + dy)),
     });
   }, []);
 
@@ -73,13 +65,11 @@ export default function ChatBubble() {
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  const startResize = (e: React.MouseEvent, type: "corner" | "top" | "left") => {
+  const startResize = (e: React.MouseEvent) => {
     e.preventDefault();
     isResizing.current = true;
-    resizeType.current = type;
     resizeStart.current = { x: e.clientX, y: e.clientY, width: size.width, height: size.height };
-    document.body.style.cursor =
-      type === "corner" ? "nw-resize" : type === "top" ? "n-resize" : "w-resize";
+    document.body.style.cursor = "nw-resize";
     document.body.style.userSelect = "none";
   };
 
@@ -100,13 +90,12 @@ export default function ChatBubble() {
           className="bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden relative"
           style={{ width: size.width, height: size.height }}
         >
-          {/* ── Resize: top-left corner ── */}
+          {/* ── Resize: top-left corner only ── */}
           <div
-            onMouseDown={(e) => startResize(e, "corner")}
+            onMouseDown={(e) => startResize(e)}
             className="absolute top-0 left-0 w-4 h-4 cursor-nw-resize z-10 group"
             title="Drag to resize"
           >
-            {/* Visual grip dots */}
             <svg
               width="10" height="10"
               viewBox="0 0 10 10"
@@ -117,18 +106,6 @@ export default function ChatBubble() {
               <circle cx="6" cy="2" r="1" fill="currentColor" />
             </svg>
           </div>
-
-          {/* ── Resize: top edge ── */}
-          <div
-            onMouseDown={(e) => startResize(e, "top")}
-            className="absolute top-0 left-4 right-0 h-1.5 cursor-n-resize z-10"
-          />
-
-          {/* ── Resize: left edge ── */}
-          <div
-            onMouseDown={(e) => startResize(e, "left")}
-            className="absolute top-4 left-0 w-1.5 bottom-0 cursor-w-resize z-10"
-          />
 
           {/* Header */}
           <div className="p-3 border-b border-border bg-primary/5 flex items-center gap-2 flex-shrink-0">
