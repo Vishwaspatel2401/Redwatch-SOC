@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from sqlalchemy import func
 from app import db, bcrypt
 from app.models import User
 
@@ -35,9 +36,9 @@ def login():
     if not data or not all(k in data for k in ("username", "password")):
         return jsonify({"error": "username and password are required"}), 400
 
-    identifier = data["username"]
+    identifier = data["username"].lower()
     user = User.query.filter(
-        (User.username == identifier) | (User.email == identifier)
+        (func.lower(User.username) == identifier) | (func.lower(User.email) == identifier)
     ).first()
     if not user or not bcrypt.check_password_hash(user.password_hash, data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
