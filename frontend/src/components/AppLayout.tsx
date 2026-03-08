@@ -1,5 +1,6 @@
 import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   Gauge,
   HardDriveUpload,
@@ -7,6 +8,8 @@ import {
   FileText,
   LogOut,
   Shield,
+  Sun,
+  Moon,
 } from "lucide-react";
 import ChatBubble from "@/components/ChatBubble";
 
@@ -20,6 +23,7 @@ const navItems = [
 export default function AppLayout() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -70,8 +74,27 @@ export default function AppLayout() {
           ))}
         </nav>
 
-        {/* Status */}
-        <div className="p-4 border-t border-border">
+        {/* Footer: theme toggle + logout */}
+        <div className="p-4 border-t border-border space-y-1">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors w-full"
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="w-4 h-4" />
+                Light Mode
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4" />
+                Dark Mode
+              </>
+            )}
+          </button>
+
+          {/* Logout */}
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors w-full"
