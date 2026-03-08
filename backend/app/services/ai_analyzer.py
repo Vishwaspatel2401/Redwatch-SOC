@@ -44,12 +44,18 @@ Do not include markdown, backticks, or any text outside the JSON object.
 """
 
 
+def _compact(entry: dict) -> dict:
+    """Strip null/empty fields so we send fewer tokens to GPT."""
+    return {k: v for k, v in entry.items() if v not in (None, "", 0, [], {})}
+
+
 def analyze_with_openai(log_entries: list) -> dict:
     """
-    Send parsed log entries to OpenAI GPT-4o-mini for threat analysis.
+    Send parsed log entries to GPT-4o-mini for threat analysis.
     Returns a structured dict with summary, threat_level, timeline, and anomalies.
     """
-    logs_json = json.dumps(log_entries[:500], indent=2)
+    compact_entries = [_compact(e) for e in log_entries[:500]]
+    logs_json = json.dumps(compact_entries, separators=(",", ":"))
 
     user_prompt = f"""
 Analyze the following {len(log_entries)} web proxy log entries.
