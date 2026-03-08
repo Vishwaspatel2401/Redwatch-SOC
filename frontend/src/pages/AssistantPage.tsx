@@ -29,6 +29,7 @@ export default function AssistantPage() {
   const [input, setInput] = useState("");
   const [report, setReport] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const chatMutation = useMutation({
     mutationFn: ({ question, history }: { question: string; history: ChatMessage[] }) =>
@@ -46,7 +47,9 @@ export default function AssistantPage() {
   });
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSend = () => {
@@ -133,6 +136,7 @@ export default function AssistantPage() {
 
         {/* Messages */}
         <div
+          ref={messagesContainerRef}
           className="overflow-y-auto p-4 space-y-4 flex-1"
           style={{ height: "480px" }}
         >
