@@ -133,8 +133,8 @@ export default function AssistantPage() {
 
         {/* Messages */}
         <div
-          className="overflow-y-auto p-4 space-y-4 transition-all duration-300"
-          style={{ minHeight: messages.length === 0 ? "160px" : "240px", maxHeight: "560px" }}
+          className="overflow-y-auto p-4 space-y-4 flex-1"
+          style={{ height: "480px" }}
         >
           {messages.length === 0 && (
             <div className="text-center py-12">
