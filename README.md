@@ -38,8 +38,8 @@ User → React (Vite) → Flask REST API → OpenAI GPT-4o-mini
 2. User uploads a log file (`.log`, `.txt`, `.csv`, `.json`, `.ndjson`, `.gz`)
 3. Frontend sends file as `multipart/form-data` to `POST /api/logs/upload`
 4. Backend auto-detects format (ZScaler CSV / Apache Combined Log / JSON/NDJSON)
-5. Parses up to 500 log events into a normalised schema
-6. Sends parsed logs to OpenAI GPT-4o-mini with a structured SOC analyst prompt
+5. Parses up to 5,000 log events into a normalised schema, then evenly samples 500 across the full file
+6. Sends the sampled entries to OpenAI GPT-4o-mini with a structured SOC analyst prompt
 7. VirusTotal SHA256 hash lookups run **in a background thread** (non-blocking)
 8. Results (anomalies, threat level, timeline, summary) are persisted to PostgreSQL
 9. Frontend renders the dashboard, alerts, and AI assistant
@@ -51,8 +51,8 @@ User → React (Vite) → Flask REST API → OpenAI GPT-4o-mini
 The fastest way to run the full stack — PostgreSQL, backend, and frontend all start together.
 
 ```bash
-git clone https://github.com/your-username/redwatch-soc
-cd redwatch-soc
+git clone https://github.com/Vishwaspatel2401/Redwatch-SOC
+cd Redwatch-SOC
 
 # 1. Set your API keys
 cp .env.example .env
@@ -94,8 +94,8 @@ docker-compose down -v
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/redwatch-soc
-cd redwatch-soc
+git clone https://github.com/Vishwaspatel2401/Redwatch-SOC
+cd Redwatch-SOC
 ```
 
 ### 2. PostgreSQL — create the database and user
@@ -182,7 +182,7 @@ Upload any of these files to verify end-to-end analysis is working.
 **Max tokens:** `4096`
 **Response format:** `json_object` (structured JSON only, no markdown)
 
-**Input:** Up to 500 parsed log entries serialised as JSON
+**Input:** Up to 5,000 parsed entries, evenly sampled down to 500 for the GPT context window
 **Output:** Structured JSON with:
 - `summary` — 2–3 sentence executive summary for the SOC team
 - `threat_level` — `low | medium | high | critical`
@@ -271,7 +271,7 @@ Tables are **auto-created on first boot** via `db.create_all()` in the app facto
 ## Project Structure
 
 ```
-redwatch-soc/
+Redwatch-SOC/
 ├── frontend/
 │   └── src/
 │       ├── pages/
