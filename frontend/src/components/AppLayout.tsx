@@ -4,16 +4,17 @@ import {
   Gauge,
   HardDriveUpload,
   Siren,
-  BrainCircuit,
+  FileText,
   LogOut,
   Shield,
 } from "lucide-react";
+import ChatBubble from "@/components/ChatBubble";
 
 const navItems = [
-  { to: "/app/dashboard", icon: Gauge,           label: "Dashboard"    },
-  { to: "/app/upload",    icon: HardDriveUpload,  label: "Upload"       },
-  { to: "/app/alerts",    icon: Siren,            label: "Alerts"       },
-  { to: "/app/assistant", icon: BrainCircuit,     label: "AI Assistant" },
+  { to: "/app/dashboard", icon: Gauge,           label: "Dashboard" },
+  { to: "/app/upload",    icon: HardDriveUpload,  label: "Upload"    },
+  { to: "/app/alerts",    icon: Siren,            label: "Alerts"    },
+  { to: "/app/reports",   icon: FileText,         label: "Reports"   },
 ];
 
 export default function AppLayout() {
@@ -82,8 +83,9 @@ export default function AppLayout() {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto relative">
         <Outlet />
+        <ChatBubble />
       </main>
     </div>
   );

@@ -10,7 +10,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import UploadPage from "@/pages/UploadPage";
 import DashboardPage from "@/pages/DashboardPage";
 import AlertsPage from "@/pages/AlertsPage";
-import AssistantPage from "@/pages/AssistantPage";
+import ReportsPage from "@/pages/ReportsPage";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
 
@@ -41,7 +41,7 @@ const App = () => (
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="upload" element={<UploadPage />} />
               <Route path="alerts" element={<AlertsPage />} />
-              <Route path="assistant" element={<AssistantPage />} />
+              <Route path="reports" element={<ReportsPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
