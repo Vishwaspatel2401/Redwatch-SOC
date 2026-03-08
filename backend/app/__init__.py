@@ -39,6 +39,9 @@ def create_app():
     app.register_blueprint(assistant_bp, url_prefix="/api/assistant")
 
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+        except Exception as e:
+            print(f"[WARNING] db.create_all() failed: {e}. Tables may already exist.")
 
     return app
