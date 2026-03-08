@@ -184,7 +184,7 @@ export default function ReportsPage() {
               Export PDF
             </Button>
           </div>
-          <pre className="whitespace-pre-wrap text-xs font-mono text-muted-foreground leading-relaxed bg-secondary/50 p-4 rounded-md overflow-auto">
+          <pre className="whitespace-pre-wrap text-xs font-mono text-foreground leading-relaxed bg-secondary/50 p-4 rounded-md overflow-auto">
             {report}
           </pre>
         </div>
