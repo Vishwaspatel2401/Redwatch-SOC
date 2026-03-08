@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Activity, Globe, ShieldAlert, AlertTriangle, Wifi, Search, TrendingUp,
-  History, FileText, Bot, ChevronDown, ChevronUp,
+  History, FileText, ChevronDown, ChevronUp,
 } from "lucide-react";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -232,13 +232,13 @@ export default function DashboardPage() {
             ) : "Upload a log file to begin analysis"}
           </p>
         </div>
-        {/* Ask AI button for current analysis */}
+        {/* Generate Report button for current analysis */}
         <button
-          onClick={() => navigate(`/app/assistant${activeUploadId ? `?upload=${activeUploadId}` : ""}`)}
+          onClick={() => navigate("/app/reports")}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors text-sm font-medium flex-shrink-0"
         >
-          <Bot className="w-4 h-4" />
-          Ask AI about this log
+          <FileText className="w-4 h-4" />
+          Generate Report
         </button>
       </div>
 
@@ -288,11 +288,11 @@ export default function DashboardPage() {
                         <HistoryThreatBadge level={upload.threat_level} />
                       )}
                       <button
-                        onClick={(e) => { e.stopPropagation(); navigate(`/app/assistant?upload=${upload.id}`); }}
+                        onClick={(e) => { e.stopPropagation(); navigate("/app/reports"); }}
                         className="flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors font-medium"
                       >
-                        <Bot className="w-3 h-3" />
-                        Ask AI
+                        <FileText className="w-3 h-3" />
+                        Report
                       </button>
                     </div>
                   </div>
