@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: tagref
+        name: Tagref — validate cross-references
+        language: system
+        entry: tagref
+        pass_filenames: false
+        always_run: true

@@ -320,3 +320,29 @@ Redwatch-SOC/
 | Apache / Nginx Combined Log | Regex match on `IP - user [timestamp] "METHOD /path" status bytes` | IP, method, path, status code, bytes |
 | JSON / NDJSON | One JSON object per line | Any common field names (normalised automatically) |
 | `.gz` compressed | Auto-decompressed before format detection | All of the above |
+
+---
+
+## Preventing Detection-Rule Drift with Tagref
+
+RedWatch uses [Tagref](https://github.com/stepchowfun/tagref) to keep three things permanently in sync:
+
+1. **MITRE technique documentation** (`docs/mitre-mappings.md`) — defines what each attack looks like in log data
+2. **Detection logic** (`app/services/ai_analyzer.py`, `log_parser.py`) — implements the heuristics
+3. **Tests** (`backend/tests/test_log_parser.py`) — verifies the parser extracts the right fields
+
+Each MITRE technique is declared once with a `[tag:...]` marker in the docs, then referenced with `[ref:...]` from the code and tests. If a technique is renamed or removed anywhere, `tagref` fails immediately — no silent drift.
+
+| File | Role |
+|------|------|
+| `docs/mitre-mappings.md` | Declares each technique with a Tagref tag |
+| `app/services/*.py` | References the tag from detection heuristic comments |
+| `tests/test_log_parser.py` | References the tag from each test class |
+
+**Run locally:**
+```bash
+tagref          # validates all tags and references
+pytest backend  # runs the detection tests
+```
+
+**Pre-commit hook** (`.pre-commit-config.yaml`) runs `tagref` automatically on every commit.

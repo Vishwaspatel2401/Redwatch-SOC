@@ -75,9 +75,11 @@ Look for:
 - Access to known malware/phishing domains (check categories)
 - Large data transfers (bytes_sent > 10MB may indicate exfiltration)
 - Access outside business hours (before 07:00 or after 20:00)
-- Blocked requests followed by retries (persistence / beaconing)
+- Blocked requests followed by retries (persistence / beaconing) [ref:T1071_beaconing]
 - Lateral movement patterns
 - Populated threat_name fields (confirmed malware detections)
+- Large outbound transfers bytes_sent > 10MB [ref:T1048_exfil]
+- Authenticated access outside business hours [ref:T1078_valid_accounts]
 
 LOG DATA:
 {logs_json}

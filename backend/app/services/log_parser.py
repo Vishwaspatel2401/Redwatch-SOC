@@ -31,6 +31,10 @@ def detect_log_format(filepath: str) -> str:
     Fingerprint the log file by reading its first 5 non-empty lines.
     Returns one of: 'zscaler' | 'apache' | 'json'
     Falls back to 'zscaler' when format is ambiguous.
+
+    Parsed fields feed the beaconing detector [ref:T1071_beaconing],
+    exfiltration detector [ref:T1048_exfil], and after-hours detector
+    [ref:T1078_valid_accounts]. See docs/mitre-mappings.md.
     """
     opener = gzip.open if filepath.endswith(".gz") else open
 
