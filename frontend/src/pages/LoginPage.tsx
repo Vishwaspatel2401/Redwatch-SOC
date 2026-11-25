@@ -24,8 +24,8 @@ export default function LoginPage() {
       await login(email, password);
       refresh();
       navigate("/app/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Login failed");
+    } catch (err) {
+      setError((err instanceof Error && err.message) || "Login failed");
     } finally {
       setLoading(false);
     }

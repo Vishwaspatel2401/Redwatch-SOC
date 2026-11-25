@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Activity, Globe, ShieldAlert, AlertTriangle, Wifi, Search, TrendingUp,
   History, FileText, ChevronDown, ChevronUp,
+  type LucideIcon,
 } from "lucide-react";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -63,7 +64,16 @@ const STATUS_PALETTE = [
 
 // ─── Pie slice % label (pointerEvents none so hover still hits the arc) ───────
 
-function renderSliceLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) {
+interface SliceLabelProps {
+  cx?: number;
+  cy?: number;
+  midAngle?: number;
+  innerRadius?: number;
+  outerRadius?: number;
+  percent?: number;
+}
+
+function renderSliceLabel({ cx = 0, cy = 0, midAngle = 0, innerRadius = 0, outerRadius = 0, percent = 0 }: SliceLabelProps) {
   if ((percent || 0) < 0.03) return null;
   const R = Math.PI / 180;
   const r = innerRadius + (outerRadius - innerRadius) * 0.55;
@@ -108,11 +118,17 @@ function formatTimeLabel(tick: string): string {
 
 // ─── Custom Tooltips ──────────────────────────────────────────────────────────
 
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: { value?: number | string }[];
+  label?: string;
+}
+
 const TT = { background: "#13161f", border: "1px solid #2a2f3d", borderRadius: 8, padding: "10px 14px" } as const;
 
-function TrafficTooltip({ active, payload, label }: any) {
+function TrafficTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
-  const time = formatTimeLabel(label);
+  const time = formatTimeLabel(label ?? "");
   const count = payload[0].value;
   return (
     <div style={TT}>
@@ -126,7 +142,7 @@ function TrafficTooltip({ active, payload, label }: any) {
 }
 
 
-function IpTooltip({ active, payload, label }: any) {
+function IpTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div style={TT}>
@@ -140,9 +156,9 @@ function IpTooltip({ active, payload, label }: any) {
   );
 }
 
-function RuleTooltip({ active, payload, label }: any) {
+function RuleTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
-  const desc = RULE_DESCRIPTIONS[label] || label;
+  const desc = RULE_DESCRIPTIONS[label ?? ""] || label;
   const displayName = label?.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
   return (
     <div style={{ ...TT, maxWidth: 220 }}>
@@ -556,7 +572,7 @@ function StatusCodesChart({ statusData, totalRequests }: {
 }
 
 function MetricCard({ icon: Icon, label, value, color, sub }: {
-  icon: any; label: string; value: number; color?: string; sub?: string;
+  icon: LucideIcon; label: string; value: number; color?: string; sub?: string;
 }) {
   return (
     <div className="bg-card border border-border rounded-lg p-4">
@@ -634,7 +650,7 @@ function LogEventsTable({ events }: { events: LogEvent[] }) {
           e.message?.toLowerCase().includes(s) ||
           e.rule?.toLowerCase().includes(s)
         );
-      }
+      } 
       return true;
     });
   }, [events, search, ruleFilter]);
