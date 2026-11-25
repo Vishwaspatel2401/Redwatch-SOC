@@ -1,9 +1,13 @@
 # RedWatch — SOC Log Analyzer
 
+[![CI](https://github.com/Vishwaspatel2401/Redwatch-SOC/actions/workflows/ci.yml/badge.svg)](https://github.com/Vishwaspatel2401/Redwatch-SOC/actions/workflows/ci.yml)
+
 A full-stack cybersecurity platform for uploading and analyzing web proxy, server, and application logs. Uses OpenAI GPT-4o-mini to detect anomalies, identify threats, and generate SOC analyst summaries with confidence scores. Optionally enriches analysis with VirusTotal hash lookups.
 
 🔴 **Live Demo:** [redwatch-soc.vercel.app](https://redwatch-soc.vercel.app)
 📁 **GitHub:** [github.com/Vishwaspatel2401/Redwatch-SOC](https://github.com/Vishwaspatel2401/Redwatch-SOC)
+
+> ⏳ The demo backend runs on a free tier that sleeps when idle — the first request after a quiet period can take 30–60 seconds while it wakes up.
 
 ---
 
@@ -22,7 +26,9 @@ A full-stack cybersecurity platform for uploading and analyzing web proxy, serve
 | Backend | Flask-JWT-Extended + Bcrypt | 4.x / 1.x |
 | AI | OpenAI GPT-4o-mini | via openai SDK ≥1.50 |
 | Threat Intel | VirusTotal API v3 | Optional |
-| Database | PostgreSQL | 16.x |
+| Database | PostgreSQL | 16+ (Neon in production) |
+| Hosting | Vercel (frontend) · Render (backend, Docker) · Neon (Postgres) | Free tiers |
+| CI | GitHub Actions | lint, tests, Tagref, Docker builds |
 
 ---
 
@@ -39,13 +45,43 @@ User → React (Vite) → Flask REST API → OpenAI GPT-4o-mini
 **Upload flow:**
 1. User authenticates → Flask issues a 24h JWT token
 2. User uploads a log file (`.log`, `.txt`, `.csv`, `.json`, `.ndjson`, `.gz`)
-3. Frontend sends file as `multipart/form-data` to `POST /api/logs/upload`
+3. Frontend gzips the file in the browser and sends it as `multipart/form-data` to `POST /api/logs/upload` (see [Deployment](#deployment) for why)
 4. Backend auto-detects format (ZScaler CSV / Apache Combined Log / JSON/NDJSON)
 5. Parses up to 5,000 log events into a normalised schema, then evenly samples 500 across the full file
 6. Sends the sampled entries to OpenAI GPT-4o-mini with a structured SOC analyst prompt
 7. VirusTotal SHA256 hash lookups run **in a background thread** (non-blocking)
 8. Results (anomalies, threat level, timeline, summary) are persisted to PostgreSQL
 9. Frontend renders the dashboard, alerts, and AI assistant
+
+---
+
+## Deployment
+
+The live demo runs entirely on free tiers, with no servers to manage:
+
+```
+Browser → Vercel (React static build)
+            │  VITE_API_BASE_URL
+            ▼
+          Render (Flask + gunicorn, built from backend/Dockerfile)
+            │  DATABASE_URL
+            ▼
+          Neon (serverless PostgreSQL)
+```
+
+| Component | Platform | Deploys on |
+|-----------|----------|------------|
+| Frontend | Vercel | Every push to `main` |
+| Backend | Render web service (Docker, root dir `backend/`) | Every push to `main` |
+| Database | Neon Postgres | — (tables auto-created on backend boot) |
+
+**Backend environment variables (Render):** `DATABASE_URL`, `JWT_SECRET_KEY`, `OPENAI_API_KEY`, `VIRUSTOTAL_API_KEY` (optional), `PORT=8000`, `FLASK_ENV=production`.
+**Frontend environment variable (Vercel):** `VITE_API_BASE_URL` — the Render URL, no trailing slash. Vite inlines it at build time, so redeploy after changing it.
+
+**Design decisions:**
+- **Why not AWS / Kubernetes / Terraform?** RedWatch is a single stateless API plus a static frontend. Managed platforms run the existing Dockerfile with zero infrastructure to maintain; a cluster or hand-built cloud networking would add cost and complexity without solving a real problem.
+- **Gzipped uploads.** Security logs are full of attack strings (`DROP TABLE`, `<script>`, `../../etc/passwd`). Render's edge WAF blocks plain request bodies containing them, so the frontend compresses every upload with the browser's `CompressionStream` before sending it. The backend parses `.gz` natively, and uploads are ~10× smaller as a bonus.
+- **Connection health.** Neon suspends idle databases and drops connections, so SQLAlchemy is configured with `pool_pre_ping` and `pool_recycle` to never hand out a stale connection.
 
 ---
 
@@ -238,6 +274,7 @@ When `VIRUSTOTAL_API_KEY` is set, the backend enriches log entries that contain 
 | POST | `/register` | No | Create a new user account |
 | POST | `/login` | No | Returns JWT access token |
 | GET | `/me` | JWT | Get current user profile |
+| POST | `/logout` | JWT | Log out (client discards the token) |
 
 ### Logs — `/api/logs`
 
@@ -253,6 +290,7 @@ When `VIRUSTOTAL_API_KEY` is set, the backend enriches log entries that contain 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
 | POST | `/chat` | JWT | Ask GPT-4o-mini questions about a specific upload |
+| POST | `/narrative` | JWT | Generate a formal SOC incident report for an upload |
 
 ---
 
@@ -292,17 +330,21 @@ Redwatch-SOC/
 │       └── lib/
 │           └── api.ts                # Typed API client (fetch + JWT)
 ├── backend/
-│   └── app/
-│       ├── models.py                 # SQLAlchemy models
-│       ├── config.py                 # Environment config
-│       ├── routes/
-│       │   ├── auth.py               # /api/auth/*
-│       │   ├── logs.py               # /api/logs/*
-│       │   └── assistant.py          # /api/assistant/*
-│       └── services/
-│           ├── log_parser.py         # Auto-detect + parse ZScaler/Apache/JSON
-│           ├── ai_analyzer.py        # OpenAI GPT-4o-mini integration
-│           └── virustotal.py         # VirusTotal SHA256 enrichment
+│   ├── app/
+│   │   ├── models.py                 # SQLAlchemy models
+│   │   ├── config.py                 # Environment config
+│   │   ├── routes/
+│   │   │   ├── auth.py               # /api/auth/*
+│   │   │   ├── logs.py               # /api/logs/*
+│   │   │   └── assistant.py          # /api/assistant/*
+│   │   └── services/
+│   │       ├── log_parser.py         # Auto-detect + parse ZScaler/Apache/JSON
+│   │       ├── ai_analyzer.py        # OpenAI GPT-4o-mini integration
+│   │       └── virustotal.py         # VirusTotal SHA256 enrichment
+│   ├── tests/                        # pytest: parser + API route tests
+│   └── Dockerfile                    # gunicorn image used by Render
+├── .github/workflows/ci.yml          # GitHub Actions CI
+├── docs/mitre-mappings.md            # MITRE ATT&CK technique definitions (Tagref)
 ├── sample-logs/
 │   ├── zscaler_sample.csv
 │   ├── apache_sample.log
@@ -320,6 +362,38 @@ Redwatch-SOC/
 | Apache / Nginx Combined Log | Regex match on `IP - user [timestamp] "METHOD /path" status bytes` | IP, method, path, status code, bytes |
 | JSON / NDJSON | One JSON object per line | Any common field names (normalised automatically) |
 | `.gz` compressed | Auto-decompressed before format detection | All of the above |
+
+---
+
+## Testing & CI
+
+**Backend — 56 pytest tests** (`backend/tests/`), run in ~10 s with no network or API keys:
+
+| File | Covers |
+|------|--------|
+| `test_log_parser.py` | Format detection and field extraction, tied to MITRE techniques via Tagref |
+| `test_auth_routes.py` | Register, login, password hashing, JWT-protected routes |
+| `test_logs_routes.py` | Upload → parse → analyze → store, gzipped uploads, bad files, analyzer failures, per-user isolation, delete |
+| `test_assistant_routes.py` | AI chat and incident narrative, history limits, client-injected `system` messages dropped, cross-user access blocked |
+
+Route tests use Flask's test client against in-memory SQLite, with OpenAI and VirusTotal mocked.
+
+**Frontend — Vitest** (`frontend/src/test/`), including the upload gzip helper.
+
+**Run locally:**
+```bash
+cd backend && pytest
+cd frontend && npm run lint && npm test
+```
+
+**GitHub Actions** (`.github/workflows/ci.yml`) runs on every push and pull request:
+
+| Job | What it checks |
+|-----|----------------|
+| `backend` | `pytest` on Python 3.11 |
+| `frontend` | ESLint, Vitest, production build |
+| `tagref` | MITRE tags and references are in sync |
+| `docker` | Backend and frontend images build |
 
 ---
 
@@ -342,7 +416,7 @@ Each MITRE technique is declared once with a `[tag:...]` marker in the docs, the
 **Run locally:**
 ```bash
 tagref          # validates all tags and references
-pytest backend  # runs the detection tests
+cd backend && pytest  # runs the detection tests
 ```
 
-**Pre-commit hook** (`.pre-commit-config.yaml`) runs `tagref` automatically on every commit.
+**Pre-commit hook** (`.pre-commit-config.yaml`) runs `tagref` automatically on every commit, and CI runs it again on every push.
