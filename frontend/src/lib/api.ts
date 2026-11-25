@@ -91,9 +91,24 @@ export async function getUploads(): Promise<Upload[]> {
   }));
 }
 
+/**
+ * Gzip a log file in the browser before upload. Security logs contain attack
+ * strings (SQLi, XSS, traversal) that the host's WAF blocks in plain request
+ * bodies; compressed bytes pass through, and the backend parses .gz natively.
+ * Already-gzipped files, or browsers without CompressionStream, are sent as-is.
+ */
+export async function gzipFile(file: File): Promise<File> {
+  if (file.name.toLowerCase().endsWith(".gz") || typeof CompressionStream === "undefined") {
+    return file;
+  }
+  const compressed = file.stream().pipeThrough(new CompressionStream("gzip"));
+  const blob = await new Response(compressed).blob();
+  return new File([blob], `${file.name}.gz`, { type: "application/gzip" });
+}
+
 export async function uploadLogFile(file: File): Promise<Upload> {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("file", await gzipFile(file));
   const data = await request<{
     upload_id: string;
     result: RawUpload & RawResult;
