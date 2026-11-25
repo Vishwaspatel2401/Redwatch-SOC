@@ -8,6 +8,9 @@ class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql://soc_user:soc_password@localhost:5432/soc_db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Neon suspends idle computes and drops connections; ping before use and
+    # recycle connections older than 5 minutes so stale ones are never handed out.
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 300}
 
     # JWT
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-in-production")
